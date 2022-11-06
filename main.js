@@ -4,6 +4,53 @@ const RENDER_EVENT = "render-todo";
 // array ini akan di isi oleh todoObject yang berisi inputan dari user
 const todos = [];
 
+function removeTaskFromCompleted(todoId) {
+  const todoTarget = findTodoIndex(todoId);
+ 
+  if (todoTarget === -1) return;
+ 
+  todos.splice(todoTarget, 1);
+  document.dispatchEvent(new Event(RENDER_EVENT));
+}
+
+  //deklarasi
+  function addTaskToCompleted(todoId) {
+    // mengembalikan nilai todoItem jika true;
+    const todoTarget = findTodo(todoId);
+
+    if (todoTarget == null) return;
+
+    // jika todoitem isCompleted berinilai true maka pindahkan.
+    todoTarget.isCompleted = true;
+    document.dispatchEvent(new Event(RENDER_EVENT));
+  }
+  function findTodoIndex(todoId) {
+    for (const index in todos) {
+      if (todos[index].id === todoId) {
+        return index;
+      }
+    }
+   
+    return -1;
+  }
+  // mencari todo dengan id yang sama.
+  function findTodo(todoId) {
+    for (const todoItem of todos) {
+      if (todoItem.id === todoId) {
+        return todoItem;
+      }
+    }
+    return null;
+  }
+
+function undoTaskFromCompleted(todoId) {
+  const todoTarget = findTodo(todoId);
+ 
+  if (todoTarget == null) return;
+ 
+  todoTarget.isCompleted = false;
+  document.dispatchEvent(new Event(RENDER_EVENT));
+}
 // event untuk memmuat seluruh document html mejadi DOM yang utuh.
 document.addEventListener("DOMContentLoaded", function () {
   // Mendapatkan element form dengan ID form.
@@ -110,23 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
         removeTaskFromCompleted(todoObject.id);
       });
 
-      function removeTaskFromCompleted(todoId) {
-        const todoTarget = findTodoIndex(todoId);
-       
-        if (todoTarget === -1) return;
-       
-        todos.splice(todoTarget, 1);
-        document.dispatchEvent(new Event(RENDER_EVENT));
-      }
-
-      function undoTaskFromCompleted(todoId) {
-        const todoTarget = findTodo(todoId);
-       
-        if (todoTarget == null) return;
-       
-        todoTarget.isCompleted = false;
-        document.dispatchEvent(new Event(RENDER_EVENT));
-      }
+      
 
       container.append(undoButton, trashButton);
     } else {
@@ -139,27 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       container.append(checkButton);
 
-      //deklarasi
-      function addTaskToCompleted(todoId) {
-        // mengembalikan nilai todoItem jika true;
-        const todoTarget = findTodo(todoId);
-
-        if (todoTarget == null) return;
-
-        // jika todoitem isCompleted berinilai true maka pindahkan.
-        todoTarget.isCompleted = true;
-        document.dispatchEvent(new Event(RENDER_EVENT));
-      }
-
-      // mencari todo dengan id yang sama.
-      function findTodo(todoId) {
-        for (const todoItem of todos) {
-          if (todoItem.id === todoId) {
-            return todoItem;
-          }
-        }
-        return null;
-      }
+    
     }
 
     return container;
